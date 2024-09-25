@@ -1,0 +1,11 @@
+__pycache__/
+
+*.pyc
+otros/
+
+build/
+
+dist/
+
+*.spec
+salida/
