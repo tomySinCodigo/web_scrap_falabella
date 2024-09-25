@@ -21,8 +21,29 @@ def obten_info():
     uno = elementos[0]
     precio = uno.find('ol', class_='pod-prices').text
     marca = uno.find('b',class_='pod-title').text
+    subtitulo = uno.find('b', class_='pod-subTitle').text
+    badge = uno.find('span', class_='pod-badges-item').text
+    imagen = uno.find('img')['src']
+    
+    print(f"precio: ", precio)
+    print(f"titulo: ", marca)
+    print(f"subtitulo: {subtitulo}")
+    print(f"badge: {badge}")
+    print(f"imagen: {imagen}")
 
-    print(precio)
-    print(marca)
+    calificacion = 0
+    try:
+        estrellas = uno.find_all('i', class_='csicon-star_full_filled')
+        estrellas_mitad = uno.find_all('i', class_='csicon-star_half_filled')
+        calificacion += len(estrellas)
+        calificacion += len(estrellas_mitad) * 0.5
+    except Exception as err:
+        print('error:: ', err)
+    print(f"calificaion: {calificacion}")
+    try:
+        n_calificaciones = uno.find('span', class_='reviewCount').text
+        print(f"reviews:: {n_calificaciones}")
+    except Exception as err:
+        print('ERR:: ', err)
 
 obten_info()
