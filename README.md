@@ -17,14 +17,12 @@ precio:  S/  219
 titulo:  ADIDAS
 subtitulo: Zapatillas Urbanas Mujer Breaknet Sleek Azul
 badge: Llega mañana
-imagen: https://www.falabella.com.pe/cdn-cgi/imagedelivery/4fYuQyy-r8_rpBpcY7lH_A/falabellaPE/2044266
-0_1/width=240,height=240,quality=70,format=webp,fit=pad
+imagen: https://www.falabella.com.pe/cdn-cgi/imagedelivery/4fYuQyy-r8_rpBpcY7lH_A/falabellaPE/20442660_1/width=240,height=240,quality=70,format=webp,fit=pad
 calificaion: 4.5
 reviews:: (89)
 ```
 
 imagen obtenida:
 
-![](https://www.falabella.com.pe/cdn-cgi/imagedelivery/4fYuQyy-r8_rpBpcY7lH_A/falabellaPE/2044266
-0_1/width=240,height=240,quality=70,format=webp,fit=pad)
+![](https://www.falabella.com.pe/cdn-cgi/imagedelivery/4fYuQyy-r8_rpBpcY7lH_A/falabellaPE/20442660_1/width=240,height=240,quality=70,format=webp,fit=pad)
 
