@@ -3,3 +3,26 @@ from bs4 import BeautifulSoup
 from playwright.sync_api import sync_playwright
 
 
+def extraer_html(url:str):
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=False)
+        page = browser.new_page()
+        page.goto(url)
+        contenido = page.content()
+        browser.close()
+        return contenido
+    
+def obten_info():
+    website = "https://www.falabella.com.pe/falabella-pe/collection/ver-todo-zapatos?sid=HO_CD_F18_GC_CAL_2770&page=2"
+    html = extraer_html(website)
+    soup = BeautifulSoup(html, 'html.parser')
+    elementos = soup.find_all(class_="grid-pod")
+
+    uno = elementos[0]
+    precio = uno.find('ol', class_='pod-prices').text
+    marca = uno.find('b',class_='pod-title').text
+
+    print(precio)
+    print(marca)
+
+obten_info()
