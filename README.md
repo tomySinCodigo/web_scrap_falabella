@@ -1,4 +1,4 @@
-# Obtencion de informacion de un producto de Falabella
+# Obtencion de informacion de los productos de una pagina
 
 url del sitio que use
 
@@ -84,7 +84,8 @@ aun hay cosas que corregir:
 
 ---
 
-# scrap.py
+# Obtencion de informacion de un producto de Falabella
+## scrap.py
 **captura del producto**
 
 ![](md/prod_1.png)
