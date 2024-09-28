@@ -9,7 +9,7 @@ Este archivo captura la info de los productos de una sola pagina (**48** product
 
 Guarda la info obtenida en un archivo **falabella_1.csv** 
 
-Hay un problemaal obtener las imagenes solo obtiene unas cuantas
+Hay un problema al obtener las imagenes solo obtiene unas cuantas
 
 
 **captura del producto**
@@ -77,7 +77,8 @@ aun hay cosas que corregir:
   'subtitulo': 'Zapatillas Urbanas Mujer Courtblock',
   'vendedor': 'Por Falabella'}]
 ```
-
+## Muestra del archivo CSV generado
+![](md/scrap2_archivoCSV.png)
 
 
 
