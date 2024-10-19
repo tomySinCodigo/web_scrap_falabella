@@ -4,6 +4,42 @@ url del sitio que use
 
 `https://www.falabella.com.pe/falabella-pe/collection/ver-todo-zapatos?sid=HO_CD_F18_GC_CAL_2770&page=2`
 
+# scrap_3.py
+Ordenando un poco el codigo funciona solo las imagenes no las captura todas (aun falta implementar )
+
+La informacion obtenida ya esta mas limpia
+
+```python
+[{'badge': 'Llega mañana',
+  'calificacion': 5.0,
+  'descuento': '',
+  'img': 'https://www.falabella.com.pe/cdn-cgi/imagedelivery/4fYuQyy-r8_rpBpcY7lH_A/falabellaPE/20442663_1/width=480,height=480,quality=70,format=webp,fit=pad',
+  'marca': 'ADIDAS',
+  'num item': 1,
+  'precio con descuento': '219',
+  'precio sin descuento': '',
+  'subtitulo': 'Zapatillas Urbanas Mujer Breaknet Sleek Azul',
+  'vendedor': 'Por Falabella'},
+
+  ...
+
+ {'badge': 'Llega mañana',
+  'calificacion': 4.5,
+  'descuento': '-50%',
+  'img': 'https://www.falabella.com.pe/cdn-cgi/imagedelivery/4fYuQyy-r8_rpBpcY7lH_A/falabellaPE/19105635_1/width=480,height=480,quality=70,format=webp,fit=pad',
+  'marca': 'PUMA',
+  'num item': 2,
+  'precio con descuento': '124.50',
+  'precio sin descuento': '249',
+  'subtitulo': 'Zapatillas Urbanas Mujer Cilia Mode',
+  'vendedor': 'Por Falabella'}]
+```
+
+en proceso (mejoras implementar)
+* returns
+* paradigma funcional
+
+
 # scrap_2.py
 Este archivo captura la info de los productos de una sola pagina (**48** productos), el archivo es un borrador aun (esta muy desordenado) pero funciona
 

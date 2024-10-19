@@ -97,4 +97,4 @@ def escribe_csv():
     df = pd.DataFrame.from_dict(dc)
     df.to_csv('falabella_1.csv')
 
-escribe_csv()
+# escribe_csv()
