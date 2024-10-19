@@ -108,11 +108,9 @@ def escribe_csv():
     print("cantidad de productos:: ", len(data))
     pd.DataFrame(data).to_csv('productos_falabella_vp.csv')
 
-def test():
-    archivo = "github/dw/Libro.xlsx"
-    elems = extrae_urls(read_excel_py(archivo))
+def test():    
     # print(len(elems), ' paginas', type(elems))
-    pagina1 = elems.iloc[0]
+    
     # print("LINK 1:: ", pagina1)
     # obt = extraer_info(pagina1)
     # # print(obt)
@@ -127,8 +125,15 @@ def test():
     # data = [e for li in map(getProductosPage, elems) for e in li]
     # print(len(data), type(data), data[-1])
 
+    # test para obtner los productos de una sola pagina
+    archivo = "github/dw/Libro.xlsx"
+    elems = extrae_urls(read_excel_py(archivo))
+    pagina1 = elems.iloc[0]
     prod = getProductosPage(pagina1)
     pprint(prod)
+
+    # obten la info de todos los productos de los lonks del archivo excel
+    # escribe_csv()
 
 
 test()

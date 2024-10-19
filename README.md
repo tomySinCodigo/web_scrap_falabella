@@ -5,9 +5,11 @@ url del sitio que use
 `https://www.falabella.com.pe/falabella-pe/collection/ver-todo-zapatos?sid=HO_CD_F18_GC_CAL_2770&page=2`
 
 # scrap_3.py
-Ordenando un poco el codigo funciona solo las imagenes no las captura todas (aun falta implementar )
+Ordenando un poco el codigo funciona (algunas imagenes no las puede obtener)
 
-La informacion obtenida ya esta mas limpia
+![](md/scrap3_prod.png)
+
+La informacion obtenida ya esta mas limpia de todos los links del archivo de excel cantidad de productos::  480 (no toem en cuenta el primer link porque es la url de la pagina principal, no del producto)
 
 ```python
 [{'badge': 'Llega mañana',
