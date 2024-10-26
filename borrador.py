@@ -20,6 +20,7 @@ def errorExcel(error: Exception) -> IOFailure[str]:
         return IOFailure('ERROR: no se pudo analizar el archivo.')
     else:
         return IOFailure(f'ERROR: inesperado: {error}')
+
 # esto estara en otro archivo
 
 def read_excel(excel_file:str) -> IOResult[DataFrame, str]:
@@ -34,7 +35,7 @@ def extract_urls(df: DataFrame) -> IOResult[Series, MiError]:
     except Exception as err:
         return IOFailure(MiError(err, extract_urls.__name__))
 
-def get_hmlt_content(url:str) -> IOResult[str, MiError]:
+def get_html_content(url:str) -> IOResult[str, MiError]:
     try:
         with sync_playwright() as p:
             browser = p.chromium.launch(headless=False)
@@ -45,7 +46,7 @@ def get_hmlt_content(url:str) -> IOResult[str, MiError]:
             browser.close()
             return IOSuccess(content)
     except Exception as err:
-        return IOFailure(MiError(err, get_hmlt_content.__name__))
+        return IOFailure(MiError(err, get_html_content.__name__))
     
 def soup_bs4(html:str, features:str ="html.parser") -> IOResult[BeautifulSoup, MiError]:
     try:
@@ -99,39 +100,49 @@ def respuesta(result:IOResult):
 def get_value(result:IOResult):
     return result
 
-
 # leer el archivo excel
-archivo_excel = 'DataLinks/Libro.xlsx'
-if Path(archivo_excel).exists():
-    # res = respuesta(read_excel('archivo_noexiste.xlsx')) # error
-    # res = respuesta(read_excel('SRC/DataLinks/Libro.xlsx'))
-    # print(res, type(res))
+# archivo_excel = 'DataLinks/Libro.xlsx'
+# if Path(archivo_excel).exists():
+#     # res = respuesta(read_excel('archivo_noexiste.xlsx')) # error
+#     # res = respuesta(read_excel('SRC/DataLinks/Libro.xlsx'))
+#     # print(res, type(res))
 
-    # obtener el html de la pagina
-    link = respuesta(read_excel(archivo_excel))[0][1] # obtengo solo un link, para pruebas
-    # print(link, type(link))
-    html = respuesta(get_hmlt_content(link))
-    # print(html, type(html))
+#     # obtener el html de la pagina
+#     link = respuesta(read_excel(archivo_excel))[0][1] # obtengo solo un link, para pruebas
+#     # print(link, type(link))
+#     html = respuesta(get_html_content(link))
+#     # print(html, type(html))
 
-    # obtener PLP
-    scrap = respuesta(get(soup_bs4(html).bind(get_value), f_all=True))
-    # print(scrap, type(scrap))
-    # extraigo solo un producto, para realizar pruebas
-    elemento = scrap[0]
-    print(elemento, type(elemento))
-    # info_prod = get_info_product(elemento)
-    # print(info_prod, type(info_prod))
+#     # obtener PLP
+#     scrap = respuesta(get(soup_bs4(html).bind(get_value), f_all=True))
+#     # print(scrap, type(scrap))
+#     # extraigo solo un producto, para realizar pruebas
+#     elemento = scrap[0]
+#     print(elemento, type(elemento))
+#     # info_prod = get_info_product(elemento)
+#     # print(info_prod, type(info_prod))
 
-    # escribe elemento
-    with open('pruebas/elemento.html', 'w') as f:
-        f.write(str(elemento))
-    print("elemento html creado")
+#     # escribe elemento
+#     with open('pruebas/elemento.html', 'w') as f:
+#         f.write(str(elemento))
+#     print("elemento html creado")
 
-else:
-    print(
-        'la ruta del archivo excel es erronea: ' \
-        f'{Path(".").cwd() / Path(archivo_excel)}'
-    )
+# else:
+#     print(
+#         'la ruta del archivo excel es erronea: ' \
+#         f'{Path(".").cwd() / Path(archivo_excel)}'
+#     )
+
+def get_link(df:DataFrame) -> IOResult[Series, MiError]:
+    try:
+        return IOSuccess(df[0][1])
+    except Exception as error:
+        return IOFailure(MiError(error, get_link.__name__))
+
+def main() -> None:
+    # solo pruebo
+    so = read_excel('DataLinks/Libro.xlsx').bind(get_link).bind(get_html_content).bind(lambda html:soup_bs4(html)).bind(get)
+    print(so)
 
 
-
+main()
