@@ -33,22 +33,22 @@ def extraer_info(URL: str):
             page.wait_for_url(URL)
             content = page.content()
             browser.close()
-            return content     
+            return content
     except Exception as err:
         raise MiError(err, "playwright no pudo obtener informacion.")
-    
+
 def soup_bs4(html:str, features:str ="html.parser") -> BeautifulSoup:
     try:
         return BeautifulSoup(html, features)
     except Exception as err:
         raise MiError(err, "bs4 parser")
-    
+
 def get(soup:BeautifulSoup, tag:Tag='div', attrs:str='grid-pod', f_all:bool=False) -> ResultSet:
     try:
         return soup.find_all(tag, attrs) if f_all else soup.find(tag, attrs)
     except Exception as err:
         raise MiError(err, f"FIND {tag}:{attrs}")
-    
+
 def scrapper(soup:BeautifulSoup, tag:Tag='div', attrs:str='grid-pod', **kw) -> ResultSet[Tag]:
     try:
         dc = []
@@ -85,7 +85,7 @@ def obtenCalificacion(resulset:ResultSet) -> float:
         return calificacion
     except Exception as err:
         raise MiError(err, f'Calificacion:: {calificacion}')
-    
+
 def obtenImagen(resulset:ResultSet) -> str:
     try:
         pic = get(resulset, tag='picture', attrs='jsx-1996933093')
@@ -95,7 +95,7 @@ def obtenImagen(resulset:ResultSet) -> str:
         return src['srcset'].split()[0].strip() if pic and src else ''
     except Exception as err:
         raise MiError(err, f"obtenIMG[pic]:{pic}")
-    
+
 def getProductosPage(url:str) ->list:
     return scrapper(soup_bs4(extraer_info(url)))
 
@@ -108,9 +108,9 @@ def escribe_csv():
     print("cantidad de productos:: ", len(data))
     pd.DataFrame(data).to_csv('productos_falabella_vp.csv')
 
-def test():    
+def test():
     # print(len(elems), ' paginas', type(elems))
-    
+
     # print("LINK 1:: ", pagina1)
     # obt = extraer_info(pagina1)
     # # print(obt)
