@@ -28,26 +28,21 @@ def select_one(soup:BeautifulSoup, selector:str) -> IOResult[ResultSet, str]:
         return IOFailure(f"{select_one.__name__} selector:{selector} ::-> {err}")
     
 def obtenCalificacion(resulset:ResultSet) -> IOResult[float, str]:
-    calificacion = 0
     try:
-        calificacion += len(respuesta(get(resulset, tag='i', attrs='csicon-star_full_filled', all=True)))
-        calificacion += len(respuesta(get(resulset, tag='i', attrs='csicon-star_half_filled', all=True)))*0.5
-        return IOSuccess(calificacion)
+        return IOSuccess(
+            len(respuesta(get(resulset, tag='i', attrs='csicon-star_full_filled', all=True))) + \
+            len(respuesta(get(resulset, tag='i', attrs='csicon-star_half_filled', all=True)))*0.5
+        )
     except Exception as err:
-        return IOFailure(f'Calificacion:: {calificacion}, {err}')
+        return IOFailure(f'Calificacion::, {err}')
 
 def obtenImagen(resulset:ResultSet) -> IOResult[str, str]:
     try:
         pic = respuesta(get(resulset, tag='picture', attrs='jsx-1996933093'))
-        print("picc:  ", pic)
         if pic:
             # src = get(pic, tag='source', attrs='jsx-1996933093')
             src = respuesta(get(pic, tag='img', attrs='jsx-1996933093'))
-            # print('src::', src)
-            print(src)
-            print(f'TIPO: {type(src)}')
             image = src['srcset'].split()[0].strip() if pic and src else ''
-            print(':::::::::::: IMAGE:::: ', image)
         return IOSuccess(image)
     except Exception as err:
         return IOFailure(f"obtenIMG - pic:{pic}, {err}")
@@ -66,7 +61,7 @@ def get_info(soup:BeautifulSoup, tag:Tag='div', attrs:str='grid-pod'):
                 ).split('/')[-1].strip(),
                 'descuento':text(respuesta(select_one(soup, 'div.pod-summary span.discount-badge-item'))),
                 'precio sin descuento':text(
-                    respuesta(select_one(soup, 'div.pod-summary li.jsx-2128016101 prices-1'))
+                    respuesta(select_one(soup, 'div.pod-summary li.jsx-2128016101.prices-1'))
                 ).split('/')[-1].strip(),
                 'calificacion':respuesta(obtenCalificacion(soup)),
                 'imagen':respuesta(obtenImagen(soup))
