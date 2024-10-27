@@ -53,7 +53,7 @@ def get_info(soup:BeautifulSoup, tag:Tag='div', attrs:str='grid-pod'):
         return IOSuccess(
             {
                 'marca':text(respuesta(select_one(soup, 'div.pod-details b.pod-title'))),
-                'badge':text(respuesta(select_one(soup, 'div.pod-details span.pod-badges-item'))),
+                'pendiente':text(respuesta(select_one(soup, 'div.pod-details span.pod-badges-item'))),
                 'subtitulo':text(respuesta(select_one(soup, 'div.pod-details b.pod-subTitle'))),
                 'vendedor':text(respuesta(select_one(soup, 'div.pod-details b.pod-sellerText'))),
                 'precio con descuento':text(
@@ -88,7 +88,8 @@ html_str = simula_scrap_elemento()
 soup = BeautifulSoup(html_str, 'html.parser')
 # Acceder al primer tag <div>
 html = soup.find('div')
-# print('TIPO:: ', type(html))
+print('TIPO:: ', type(html))
+print(html)
 # obteniendo info del producto
 # res = get_info(html)
 res = respuesta(get_info(html))

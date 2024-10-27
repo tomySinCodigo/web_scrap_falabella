@@ -5,40 +5,31 @@ from playwright.sync_api import sync_playwright
 from returns.io import IOResult, IOSuccess, IOFailure
 from returns.pipeline import is_successful
 
+
 # esto estara en otro archivo
 class MiError(Exception):
     def __init__(self, error, function_name):
-        super().__init__(f'Error, {function_name}: {error}')
-
-
-def errorExcel(error: Exception) -> IOFailure[str]:
-    if isinstance(error, FileNotFoundError):
-        return IOFailure('ERROR: el archivo no fue encontrado.')
-    elif isinstance(error, pd.errors.EmptyDataError):
-        return IOFailure('ERROR: el archivo esta vacio.')
-    elif isinstance(error, pd.errors.ParserError):
-        return IOFailure('ERROR: no se pudo analizar el archivo.')
-    else:
-        return IOFailure(f'ERROR: inesperado: {error}')
-
+        super().__init__(f"Error, {function_name}: {error}")
 # esto estara en otro archivo
 
-def read_excel(excel_file:str) -> IOResult[DataFrame, str]:
+
+def read_excel(excel_file: str) -> IOResult[DataFrame, str]:
     try:
         return IOSuccess(pd.read_excel(excel_file, header=None))
     except Exception as err:
-        return errorExcel(err)
-    
+        return MiError(err, read_excel.__name__)
+
 def extract_urls(df: DataFrame) -> IOResult[Series, MiError]:
     try:
         return IOSuccess(df[0])
     except Exception as err:
         return IOFailure(MiError(err, extract_urls.__name__))
 
-def get_html_content(url:str) -> IOResult[str, MiError]:
+def get_html_content(url: str) -> IOResult[str, MiError]:
     try:
         with sync_playwright() as p:
-            browser = p.chromium.launch(headless=False)
+            # browser = p.chromium.launch(headless=False)
+            browser = p.chromium.launch()
             page = browser.new_page()
             page.goto(url)
             page.wait_for_url(url)
@@ -47,102 +38,72 @@ def get_html_content(url:str) -> IOResult[str, MiError]:
             return IOSuccess(content)
     except Exception as err:
         return IOFailure(MiError(err, get_html_content.__name__))
-    
-def soup_bs4(html:str, features:str ="html.parser") -> IOResult[BeautifulSoup, MiError]:
+
+def soup_bs4(
+    html: str, features: str = "html.parser"
+) -> IOResult[BeautifulSoup, MiError]:
     try:
         return IOSuccess(BeautifulSoup(html, features))
     except Exception as err:
         return IOFailure(MiError(err, soup_bs4.__name__))
-    
-def get(soup:BeautifulSoup, tag:Tag='div', attrs:str='grid-pod', f_all:bool=False) -> IOResult[ResultSet, MiError]:
+
+def find(soup:BeautifulSoup, tag:Tag="div", attrs:str="grid-pod", all:bool=False) -> IOResult[ResultSet, MiError]:
     try:
-        return IOSuccess(soup.find_all(tag, attrs) if f_all else soup.find(tag, attrs))
+        return IOSuccess(soup.find_all(tag, attrs) if all else soup.find(tag, attrs))
     except Exception as err:
-        return IOFailure(MiError(err, f"{get.__name__} {tag}:{attrs}"))
-    
-def get_info_product(soup:BeautifulSoup, tag:Tag='div') -> IOResult[dict, MiError]:
+        return IOFailure(MiError(err, f"{find.__name__} {tag}:{attrs}"))
+
+def text(resultset: ResultSet) -> str:
+    return resultset.text if resultset else ""
+
+def select_one(soup:BeautifulSoup, selector:str) -> IOResult[ResultSet, str]:
+    try:
+        return IOSuccess(text(soup.select_one(selector)))
+    except Exception as err:
+        return IOFailure(f"{select_one.__name__} selector:{selector} ::-> {err}")
+
+def get_info_product(soup:BeautifulSoup) -> IOResult[dict, MiError]:
     try:
         return IOSuccess(
             {
-                'badge':text(
-                    get(soup, attrs='pod-details').bind(
-                    lambda x:get(x, tag='span', attrs='pod-badges-item')
-                    ).bind(get_value)
-                ),
-                'marca':text(
-                    get(soup, attrs='pod-summary').bind(
-                        lambda t:get(t, tag='b', attrs='pod-title')
-                    ).bind(get_value)
-                )
+                'marca':get(select_one(soup, 'div.pod-details b.pod-title')),
+                'pendiente':get(select_one(soup, 'div.pod-details span.pod-badges-item')),
+                'subtitulo':get(select_one(soup, 'div.pod-details b.pod-subTitle')),
+                'vendedor':get(select_one(soup, 'div.pod-details b.pod-sellerText')),
+                'precio con descuento':get(select_one(soup, 'div.pod-summary span.line-height-22')).split('/')[-1].strip(),
+
             }
         )
     except Exception as err:
-        return IOFailure(MiError(err, f"{get_info_product.__name__} tag:{tag}"))
+        return IOFailure(MiError(err, f"{get_info_product.__name__}"))
 
-def text(resultset:ResultSet) -> str | None:
-    return resultset.text if resultset else ""
+def get(result: IOResult):
+    return result.bind(lambda r:r) if is_successful(result) else result.failure()
 
-def get_productos_info():
-    pass
-    
 
 
 # TESTS
-from pathlib import Path
-
-
-def respuesta(result:IOResult):
-    if is_successful(result):
-        return result.bind(get_value)
-    else:
-        return result.failure()
-
-def get_value(result:IOResult):
-    return result
-
-# leer el archivo excel
-# archivo_excel = 'DataLinks/Libro.xlsx'
-# if Path(archivo_excel).exists():
-#     # res = respuesta(read_excel('archivo_noexiste.xlsx')) # error
-#     # res = respuesta(read_excel('SRC/DataLinks/Libro.xlsx'))
-#     # print(res, type(res))
-
-#     # obtener el html de la pagina
-#     link = respuesta(read_excel(archivo_excel))[0][1] # obtengo solo un link, para pruebas
-#     # print(link, type(link))
-#     html = respuesta(get_html_content(link))
-#     # print(html, type(html))
-
-#     # obtener PLP
-#     scrap = respuesta(get(soup_bs4(html).bind(get_value), f_all=True))
-#     # print(scrap, type(scrap))
-#     # extraigo solo un producto, para realizar pruebas
-#     elemento = scrap[0]
-#     print(elemento, type(elemento))
-#     # info_prod = get_info_product(elemento)
-#     # print(info_prod, type(info_prod))
-
-#     # escribe elemento
-#     with open('pruebas/elemento.html', 'w') as f:
-#         f.write(str(elemento))
-#     print("elemento html creado")
-
-# else:
-#     print(
-#         'la ruta del archivo excel es erronea: ' \
-#         f'{Path(".").cwd() / Path(archivo_excel)}'
-#     )
-
-def get_link(df:DataFrame) -> IOResult[Series, MiError]:
+def get_link(df: DataFrame) -> IOResult[Series, MiError]:
     try:
         return IOSuccess(df[0][1])
     except Exception as error:
         return IOFailure(MiError(error, get_link.__name__))
 
 def main() -> None:
-    # solo pruebo
-    so = read_excel('DataLinks/Libro.xlsx').bind(get_link).bind(get_html_content).bind(lambda html:soup_bs4(html)).bind(get)
-    print(so)
+    # obteniendo los productos de una pagina (~ 48 productos)
+    elementos = get(
+        read_excel("DataLinks/Libro.xlsx")
+        .bind(get_link)
+        .bind(get_html_content)
+        .bind(lambda html: soup_bs4(html))
+        .bind(lambda prods:find(prods, all=True))
+    )
+    # estp es solo para ir comprobando, que obtiene info correctamente
+    print(f'TIPO: {type(elementos)}')
+    elementos = map(get_info_product, elementos)
+    for e in elementos:
+        print(e)
+    # obteniendo los productos de una pagina (~ 48 productos)
 
 
 main()
