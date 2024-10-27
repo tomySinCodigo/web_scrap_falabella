@@ -8,18 +8,19 @@ caracteristicas:
 - [x] extraer urls
 - [x] obtener html de la pagina
 - [ ] extraer info de los productos, todos los links del archivo excel (varias urls)
-    - [-] obtener info de un producto
+    - [x] obtener info de un producto
     - [ ] obtener info de los productos en una pagina
-        - [-] marca
-        - [-] pendiente
-        - [-] subtitulo
-        - [-] vendedor
-        - [-] precio con descuento
+        - [x] marca
+        - [x] pendiente
+        - [x] subtitulo
+        - [x] vendedor
+        - [x] precio con descuento
         - [ ] precio sin descuento
         - [ ] descuento
         - [ ] calificacion
         - [ ] imagen
 - [ ] guardar informacion
+- [ ] realizar graficas con los datos obtenidos (seaborn)
 
 
 Para obtener la info de cada producto:
