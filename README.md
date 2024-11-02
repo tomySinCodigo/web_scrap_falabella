@@ -29,5 +29,5 @@ Para obtener la info de cada producto:
 Estoy haciendo pruebas por separado, con un solo producto para obtener toda la informacion
 * para agilizar y facilitarme las pruebas con las funciones anteriores (las que tiene check) guarde el html de un solo producto en un archivo
 
-
-
+## Manejo de errores
+he creado un modulo con clases para los errores de cada funcion
