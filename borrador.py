@@ -7,7 +7,8 @@ from returns.pipeline import is_successful
 from errores import (
     MiError, ErrorExcel, ErrorExtractUrls, ErrorPlaywright,
     ErrorBs4Parser, ErrorBs4Find, ErrorBs4SelOne,
-    ErrorGetInfo, ErrorGetPLP, ErrorGetProductosInfo
+    ErrorGetInfo, ErrorGetPLP, ErrorGetProductosInfo,
+    ErrorCalification, ErrorGetImagen
 )
 
 
@@ -26,8 +27,8 @@ def extract_urls(df: DataFrame) -> IOResult[Series, ErrorExtractUrls]:
 def get_html_content(url: str) -> IOResult[str, ErrorPlaywright]:
     try:
         with sync_playwright() as p:
-            # browser = p.chromium.launch(headless=False)
-            browser = p.chromium.launch()
+            browser = p.chromium.launch(headless=False)
+            # browser = p.chromium.launch()
             page = browser.new_page()
             page.goto(url)
             page.wait_for_url(url)
@@ -59,6 +60,30 @@ def select_one(soup:BeautifulSoup, selector:str) -> IOResult[ResultSet, ErrorBs4
         return IOSuccess(text(soup.select_one(selector)))
     except Exception as err:
         return IOFailure(ErrorBs4SelOne(err, f"selector:{selector}"))
+    
+def get_calification(resulset:ResultSet) -> IOResult[float, ErrorCalification]:
+    try:
+        return IOSuccess(
+            len(get(find(resulset, tag='i', attrs='csicon-star_full_filled', all=True))) + \
+            len(get(find(resulset, tag='i', attrs='csicon-star_half_filled', all=True)))*0.5
+        )
+    except Exception as err:
+        return IOFailure(ErrorCalification(err))
+    
+def get_image(resulset:ResultSet) -> IOResult[str, ErrorGetImagen]:
+    try:
+        pic = get(select_one(resulset, 'picture.jsx-1996933093 source.jsx-1996933093'))
+        print(pic, len(pic), type(pic))
+        if pic:
+            # src = get(pic, tag='source', attrs='jsx-1996933093')
+            # src = get(pic, tag='img', attrs='jsx-1996933093')
+            src = get(pic)
+            print("SOURCE::: ", src['srcset'])
+            image = src['srcset'].split(',')[0].strip() if pic and src else ''
+            # .bind(lambda x: x['srcset'].split(',')[0].strip() if x else '')
+        return IOSuccess(image)
+    except Exception as err:
+        return IOFailure(ErrorGetImagen(err))
 
 def get_info_product(soup:BeautifulSoup) -> IOResult[dict, ErrorGetInfo]:
     try:
@@ -69,8 +94,10 @@ def get_info_product(soup:BeautifulSoup) -> IOResult[dict, ErrorGetInfo]:
                 'subtitulo':get(select_one(soup, 'div.pod-details b.pod-subTitle')),
                 'vendedor':get(select_one(soup, 'div.pod-details b.pod-sellerText')),
                 'precio con descuento':get(select_one(soup, 'div.pod-summary span.line-height-22')).split('/')[-1].strip(),
-                # 'precio con descuento':get(select_one(soup, 'div.pod-summary span.line-height-22')),
-
+                'precio sin descuento':get(select_one(soup, 'div.pod-summary li.jsx-2128016101.prices-1')).split('/')[-1].strip(),
+                'descuento':get(select_one(soup, 'div.pod-summary span.discount-badge-item')),
+                'calificacion':get(get_calification(soup)),
+                # 'img':get(get_image(soup))
             }
         )
     except Exception as err:
@@ -110,7 +137,7 @@ def main() -> None:
     # obteniendo los productos de una pagina (~ 48 productos)
     prods = get(get_productos_info())
     # print(type(prods))
-    for p in prods:
+    for p in list(prods)[0:12]:
         print(p)
 
 main()

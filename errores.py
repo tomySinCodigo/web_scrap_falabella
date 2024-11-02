@@ -33,3 +33,10 @@ class ErrorGetPLP(MiError):
 
 class ErrorGetProductosInfo(MiError):
     """productos info"""
+
+class ErrorCalification(MiError):
+    """obteniendo calificacion"""
+
+class ErrorGetImagen(MiError):
+    """obteniendo imagen del producto"""
+

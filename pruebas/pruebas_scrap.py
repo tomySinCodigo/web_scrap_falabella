@@ -11,13 +11,13 @@ def get(soup:BeautifulSoup, tag:Tag='div', attrs:str='grid-pod', all:bool=False)
         return IOSuccess(soup.find_all(tag, attrs) if all else soup.find(tag, attrs))
     except Exception as err:
         return IOFailure(f"{get.__name__} {tag}:{attrs} ::-> {err}")
-    
+
 def get_value(result:IOResult):
     return result
 
 def respuesta(res:IOResult):
     return res.bind(get_value) if is_successful(res) else res.failure()
-    
+
 def text(resultset:ResultSet) -> str | None:
     return resultset.text if resultset else ""
 
@@ -26,7 +26,7 @@ def select_one(soup:BeautifulSoup, selector:str) -> IOResult[ResultSet, str]:
         return IOSuccess(soup.select_one(selector))
     except Exception as err:
         return IOFailure(f"{select_one.__name__} selector:{selector} ::-> {err}")
-    
+
 def obtenCalificacion(resulset:ResultSet) -> IOResult[float, str]:
     try:
         return IOSuccess(
@@ -47,6 +47,21 @@ def obtenImagen(resulset:ResultSet) -> IOResult[str, str]:
     except Exception as err:
         return IOFailure(f"obtenIMG - pic:{pic}, {err}")
 
+def obtenImagen2(resulset:ResultSet) -> IOResult[str, str]:
+    # pic = respuesta(select_one(resulset, 'picture.jsx-1996933093 source.jsx-1996933093'))['srcset']
+    # pic = get(select_one(resulset, 'picture.jsx-1996933093 img.jsx-1996933093'))
+    # pic = select_one(resulset, 'picture.jsx-1996933093 source.jsx-1996933093')
+    return (
+        # respuesta(select_one(resulset, 'picture.jsx-1996933093 source.jsx-1996933093'))
+        select_one(resulset, 'picture.jsx-1996933093 source.jsx-1996933093')
+        .bind(lambda x: x['srcset'].split(',')[0].strip() if x else '')
+        # .bind(lambda src:src['srcset'][0])
+    )
+
+    # print("pic ------")
+    # print(pic)
+    # return ""
+
 
 def get_info(soup:BeautifulSoup, tag:Tag='div', attrs:str='grid-pod'):
     try:
@@ -64,19 +79,19 @@ def get_info(soup:BeautifulSoup, tag:Tag='div', attrs:str='grid-pod'):
                     respuesta(select_one(soup, 'div.pod-summary li.jsx-2128016101.prices-1'))
                 ).split('/')[-1].strip(),
                 'calificacion':respuesta(obtenCalificacion(soup)),
-                'imagen':respuesta(obtenImagen(soup))
+                'imagen':obtenImagen2(soup)
             }
         )
     except Exception as err:
         return IOFailure(f'falla [get_info]:: {err}')
-    
 
 
-# TEST 
-# TEST 
+
+# TEST
+# TEST
 # from pathlib import Path
 # print("\n", Path().cwd())
-archivo = 'pruebas/elemento.html'
+archivo = './elemento.html'
 
 def simula_scrap_elemento() -> str:
     with open(archivo) as f:
@@ -89,7 +104,7 @@ soup = BeautifulSoup(html_str, 'html.parser')
 # Acceder al primer tag <div>
 html = soup.find('div')
 print('TIPO:: ', type(html))
-print(html)
+# print(html)
 # obteniendo info del producto
 # res = get_info(html)
 res = respuesta(get_info(html))
@@ -98,5 +113,5 @@ from pprint import pprint
 print()
 pprint(res)
 print()
-# TEST 
-# TEST 
+# TEST
+# TEST
